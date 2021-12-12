@@ -37,7 +37,6 @@ router.post("/register", (req, res) => {
             id: id,
             username: req.body.name,
             hash: hash,
-            salt: salt,
             authenticate: req.body.authenticate,
             secret: newSecret,
           });
@@ -57,7 +56,6 @@ router.post("/login", (req, res) => {
     const user = users.find((user) => {
       return user.username === req.body.name;
     });
-    console.log(user);
     // Name exists
     if (user) {
       bcrypt.compare(
@@ -70,6 +68,7 @@ router.post("/login", (req, res) => {
               res.json({
                 login: false,
                 authenticate: true,
+                id: user.id,
                 qrLink: user.secret.qr,
               });
             } else {
@@ -91,9 +90,35 @@ router.post("/login", (req, res) => {
 
 router.post("/code", (req, res) => {
   if (req.body.code && req.body.id) {
-    twofactor.verifyToken("XDQXYCP5AC6FA32FQXDGJSPBIDYNKK5W", "630618");
+    const user = users.find((user) => {
+      return user.id === req.body.id;
+    });
+    if (user) {
+      const delta = twoFactor.verifyToken(user.secret.secret, req.body.code);
+      console.log(delta);
+      if (delta && delta.delta >= 0 && delta.delta <= 4) {
+        res.json({ login: true, authenticate: true, id: user.id });
+      } else {
+        res.json({ login: false, authenticate: true, id: user.id });
+      }
+    } else {
+      // Wrong ID
+      res.status(400).send("Could not find user");
+    }
   } else {
     res.status(400).send("Missing code field");
+  }
+});
+
+router.get("/authenticate/:id", (req, res) => {
+  const user = users.find((user) => {
+    return user.id === req.params.id;
+  });
+  if (user) {
+    user.authenticate = user.authenticate ? false : true;
+    res.json({ authenticate: user.authenticate });
+  } else {
+    res.status(400).send("Could not find user");
   }
 });
 
