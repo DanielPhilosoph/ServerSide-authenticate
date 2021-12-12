@@ -28,7 +28,6 @@ router.post("/register", (req, res) => {
             name: "daniel's app",
             account: req.body.name,
           });
-          console.log(newSecret);
           // Generate Id
           id = uniqid();
 
@@ -95,7 +94,7 @@ router.post("/code", (req, res) => {
     });
     if (user) {
       const delta = twoFactor.verifyToken(user.secret.secret, req.body.code);
-      console.log(delta);
+
       if (delta && delta.delta >= 0 && delta.delta <= 4) {
         res.json({ login: true, authenticate: true, id: user.id });
       } else {

@@ -12,7 +12,6 @@ const Login = (props) => {
         name: name.current.value,
         password: password.current.value,
       });
-      console.log(response);
       // Should redirect to Home if true
       props.setAuthenticate(response.data.login);
       // Should redirect to CodePage if true

@@ -6,7 +6,6 @@ const Home = (props) => {
       const response = await axios.get(
         `http://localhost:3001/user/authenticate/${props.id}`
       );
-      console.log(response);
       props.setCurrentAuthenticate(response.data.authenticate);
     } catch (error) {
       console.log(error);

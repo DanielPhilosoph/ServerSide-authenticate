@@ -16,7 +16,7 @@ const CodePage = (props) => {
         props.setAuthenticate(true);
         navigate("/home");
       } else {
-        console.log("Not quit right");
+        alert("Not quit right");
       }
     } catch (error) {
       console.log(error);
